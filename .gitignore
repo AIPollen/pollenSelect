@@ -1,2 +1,3 @@
 # Ignore finder files
 .DS_Store
+crop*.*
