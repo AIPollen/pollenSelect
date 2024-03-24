@@ -10,6 +10,9 @@ img_raw = cv2.imread(img_path)
 # Select ROIs function
 ROIs = cv2.selectROIs("Select Rois", img_raw)
 
+# Ask for pollentype name
+pollentype_name = input("Enter the name of the pollentype: ")
+
 # Print rectangle points of selected ROIs
 print(ROIs)
 
@@ -31,8 +34,8 @@ for rect in ROIs:
     # Show cropped image
     cv2.imshow("crop"+str(crop_number), img_crop)
 
-    # Save cropped image
-    cv2.imwrite("crop"+str(crop_number)+".jpeg", img_crop)
+    # Save cropped image using pollentype name
+    cv2.imwrite(f"{pollentype_name}_{crop_number}.jpeg", img_crop)
 
     crop_number += 1
 
