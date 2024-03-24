@@ -66,7 +66,8 @@ if img_path:
         x, y, r = circle
 
         # Calculate side length for perfect square (considering radius and padding)
-        side_length = 2 * max(r + 100, 0)
+        # Adjust padding as needed for pollentype
+        side_length = 2 * max(r + 20, 0)
 
         # Determine top-left corner coordinates for square
         x1 = x - (side_length // 2)
