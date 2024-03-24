@@ -21,8 +21,14 @@ if img_path:
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)  # Apply blur for noise reduction
 
     # Set parameters for circle detection (adjust as needed)
+    # pd (default = 1) higher -> faster but coarser search
+    # minDist (default = 20) higher -> reduces the change of finding closely spaced circles
+    # param1 (def 50) higher -> reduces noice, might miss faint circles
+    # param2 (def 30) higher might lead to less false positives
+    # minRadius (def 10) 
+    # maxRadius (def 100)
     circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1, 20,
-                              param1=50, param2=30, minRadius=10, maxRadius=100)
+                              param1=52, param2=30, minRadius=25, maxRadius=100)
 
     # Check if circles are found
     if circles is not None:
@@ -60,7 +66,7 @@ if img_path:
         x, y, r = circle
 
         # Calculate side length for perfect square (considering radius and padding)
-        side_length = 2 * max(r + 10, 0)
+        side_length = 2 * max(r + 100, 0)
 
         # Determine top-left corner coordinates for square
         x1 = x - (side_length // 2)
@@ -75,8 +81,8 @@ if img_path:
         # Crop ROI as a perfect square
         img_crop = img_raw[y1:y2, x1:x2]
 
-        # Resize cropped image to 224x224 pixels (adjust if needed)
-        img_resized = cv2.resize(img_crop, (224, 224))
+        # Resize cropped image to 224x224 pixels (for TeachableMachine, adjust if needed)
+        img_resized = cv2.resize(img_crop, (256, 256))
 
         # Show resized image
         cv2.imshow("Crop" + str(crop_number), img_resized)
