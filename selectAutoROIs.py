@@ -54,7 +54,7 @@ if img_path:
     # Create a directory for the pollen type
     os.makedirs(pollentype_name, exist_ok=True)
 
-    # Loop through detected circles and crop perfect squares around them
+    # Loop through detected circles, crop perfect squares, and resize
     crop_number = 0
     for circle in circles:
         x, y, r = circle
@@ -75,11 +75,14 @@ if img_path:
         # Crop ROI as a perfect square
         img_crop = img_raw[y1:y2, x1:x2]
 
-        # Show cropped image
-        cv2.imshow("Crop" + str(crop_number), img_crop)
+        # Resize cropped image to 224x224 pixels (adjust if needed)
+        img_resized = cv2.resize(img_crop, (224, 224))
 
-        # Save cropped image
-        cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_crop, [cv2.IMWRITE_JPEG_QUALITY, 100])
+        # Show resized image
+        cv2.imshow("Crop" + str(crop_number), img_resized)
+
+        # Save resized image
+        cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_resized, [cv2.IMWRITE_JPEG_QUALITY, 100])
 
         crop_number += 1
 
