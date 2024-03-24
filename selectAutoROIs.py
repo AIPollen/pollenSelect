@@ -49,7 +49,7 @@ if img_path:
     # Draw detected circles on the image
     for circle in circles:
       x, y, r = circle
-      cv2.circle(img_circle, (x, y), r, (0, 255, 0), 2)  # Draw green circles
+      cv2.circle(img_circle, (x, y), r, (255, 0, 0), 2)  # Draw green circles
 
     # Show image with circles
     cv2.imshow("Image with Detected Circles", img_circle)
