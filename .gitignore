@@ -4,5 +4,5 @@
 # Ignore cropped files
 *.jpeg
 
-# Ignore all testImages directory
-testImages/
+# Ignore all directories
+*/
