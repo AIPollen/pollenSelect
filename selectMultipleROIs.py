@@ -39,8 +39,8 @@ if img_path:
         # Show cropped image
         cv2.imshow("crop"+str(crop_number), img_crop)
 
-        # Save cropped image in the pollentype directory
-        cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_crop)
+        # Save cropped image in the pollentype directory    
+        cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_crop, [cv2.IMWRITE_JPEG_QUALITY, 100])
 
         crop_number += 1
 
