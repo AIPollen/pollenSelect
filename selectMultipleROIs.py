@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import os
 
 # Image path
 img_path = "/Users/marcory/Documents/PollenOnderzoek/AIPollen/pollenSelect/pollenSelect/testImages/80euroAdapterSneeuwklokje.jpg"
@@ -12,6 +13,9 @@ ROIs = cv2.selectROIs("Select Rois", img_raw)
 
 # Ask for pollentype name
 pollentype_name = input("Enter the name of the pollentype: ")
+
+# Create a directory for the pollen type
+os.makedirs(pollentype_name, exist_ok=True)  # Create directory if it doesn't exist, otherwise do nothing
 
 # Print rectangle points of selected ROIs
 print(ROIs)
@@ -34,8 +38,8 @@ for rect in ROIs:
     # Show cropped image
     cv2.imshow("crop"+str(crop_number), img_crop)
 
-    # Save cropped image using pollentype name
-    cv2.imwrite(f"{pollentype_name}_{crop_number}.jpeg", img_crop)
+    # Save cropped image in the pollentype directory
+    cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_crop)
 
     crop_number += 1
 
