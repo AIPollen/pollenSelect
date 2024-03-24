@@ -2,7 +2,7 @@
 .DS_Store
 
 # Ignore cropped files
-crop*.*
+*.jpeg
 
 # Ignore all testImages directory
 testImages/
