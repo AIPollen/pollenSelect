@@ -54,24 +54,34 @@ if img_path:
     # Create a directory for the pollen type
     os.makedirs(pollentype_name, exist_ok=True)
 
-    # Loop through detected circles and crop around them
+    # Loop through detected circles and crop perfect squares around them
     crop_number = 0
     for circle in circles:
-      x, y, r = circle
-      # Adjust padding as needed (increase for larger margins)
-      x1, y1 = max(0, x - r - 10), max(0, y - r - 10)
-      x2, y2 = min(img_raw.shape[1], x + r + 10), min(img_raw.shape[0], y + r + 10)
+        x, y, r = circle
 
-      # Crop ROI based on circle coordinates and padding
-      img_crop = img_raw[y1:y2, x1:x2]
+        # Calculate side length for perfect square (considering radius and padding)
+        side_length = 2 * max(r + 10, 0)
 
-      # Show cropped image
-      cv2.imshow("Crop" + str(crop_number), img_crop)
+        # Determine top-left corner coordinates for square
+        x1 = x - (side_length // 2)
+        y1 = y - (side_length // 2)
 
-      # Save cropped image
-      cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_crop, [cv2.IMWRITE_JPEG_QUALITY, 100])
+        # Ensure coordinates are within image bounds
+        x1 = max(0, x1)
+        y1 = max(0, y1)
+        x2 = min(img_raw.shape[1], x1 + side_length)
+        y2 = min(img_raw.shape[0], y1 + side_length)
 
-      crop_number += 1
+        # Crop ROI as a perfect square
+        img_crop = img_raw[y1:y2, x1:x2]
+
+        # Show cropped image
+        cv2.imshow("Crop" + str(crop_number), img_crop)
+
+        # Save cropped image
+        cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_crop, [cv2.IMWRITE_JPEG_QUALITY, 100])
+
+        crop_number += 1
 
     cv2.waitKey(0)
 
