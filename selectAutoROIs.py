@@ -82,7 +82,7 @@ if img_path:
         img_crop = img_raw[y1:y2, x1:x2]
 
         # Resize cropped image to 224x224 pixels (for TeachableMachine, adjust if needed)
-        img_resized = cv2.resize(img_crop, (256, 256))
+        img_resized = cv2.resize(img_crop, (224, 224))
 
         # Show resized image
         cv2.imshow("Crop" + str(crop_number), img_resized)
