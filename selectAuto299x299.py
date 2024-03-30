@@ -87,7 +87,7 @@ if img_path:
     cv2.imwrite(os.path.join(pollentype_name, f"{pollentype_name}_{crop_number}.jpeg"), img_region, [cv2.IMWRITE_JPEG_QUALITY, 100])
 
     crop_number += 1
-    
+
     cv2.waitKey(0)
 
   else:
@@ -95,3 +95,4 @@ if img_path:
 
 else:
   print("No image selected.")
+  
