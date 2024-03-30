@@ -4,7 +4,7 @@ Selects multiple pollen grains from one image for machine learning datasets.
 
 ## Requirements
 Python 3.x
-OpenCV-Python (pip install opencv-python)
+OpenCV-Python (pip install opencv-python) of (pip3 install opencv-contrib-python)
 NumPy (pip install numpy)
 
 ## selectManualROIs
