@@ -1,0 +1,19 @@
+import cv2
+import numpy as np
+
+# path_orig = path to the traininsset and/or validationset
+path_orig = /Volumes/Pollen1/PollenTrainingssetsOnline/POLEN23/POLEN23E
+
+# path_resize = destination path of the resized images
+path_resize
+
+# imgpx is the image size in pixels, adjust as needed
+imgpx = 224
+
+img = cv2.imread(path_orig)
+
+img_resize = cv2.resize(img, (imgpx,imgpx))
+
+print(img_resize.shap)
+
+# Save resized 
