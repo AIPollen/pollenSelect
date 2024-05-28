@@ -7,7 +7,6 @@ import numpy as np  # Required for creating the canvas
 TARGET_SIZE = 224  # Desired square size
 INTERPOLATION = cv2.INTER_AREA  # Optimal for reducing image size
 SUPPORTED_FORMATS = (".jpg", ".jpeg", ".png")
-BACKGROUND_COLOR = (255, 255, 255)  # White background color
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -15,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def resize_and_pad_image(img_path, target_size=TARGET_SIZE, dest_subdirectory="_Resized_Square_", interpolation=INTERPOLATION):
     """
-    Resizes an image to fit within a square and adds padding to maintain aspect ratio.
+    Resizes an image to fit within a square and adds padding to maintain aspect ratio using edge padding.
 
     Parameters:
         img_path (str): Path to the input image.
@@ -53,14 +52,15 @@ def resize_and_pad_image(img_path, target_size=TARGET_SIZE, dest_subdirectory="_
 
     img_resized = cv2.resize(img, (new_width, new_height), interpolation=interpolation)
 
-    # Create a new canvas with white background
-    canvas = np.zeros((target_size, target_size, 3), dtype=np.uint8)
-    canvas[:, :] = BACKGROUND_COLOR
-
-    # Add the resized image to the center of the canvas
-    y_offset = (target_size - new_height) // 2
-    x_offset = (target_size - new_width) // 2
-    canvas[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = img_resized
+    # Create a new canvas with edge padding
+    canvas = cv2.copyMakeBorder(
+        img_resized,
+        top=(target_size - new_height) // 2,
+        bottom=(target_size - new_height + 1) // 2,
+        left=(target_size - new_width) // 2,
+        right=(target_size - new_width + 1) // 2,
+        borderType=cv2.BORDER_REPLICATE
+    )
 
     base_name = os.path.splitext(os.path.basename(img_path))[0]
     ext = os.path.splitext(os.path.basename(img_path))[1]
