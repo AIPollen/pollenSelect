@@ -14,7 +14,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def resize_and_pad_image(img_path, target_size=TARGET_SIZE, dest_subdirectory="_Resized_Square_", interpolation=INTERPOLATION):
     """
-    Resizes an image to fit within a square and adds padding to maintain aspect ratio using edge padding.
+    Resizes an image to fit within a square and adds padding to maintain aspect ratio using reflect padding.
 
     Parameters:
         img_path (str): Path to the input image.
@@ -52,14 +52,20 @@ def resize_and_pad_image(img_path, target_size=TARGET_SIZE, dest_subdirectory="_
 
     img_resized = cv2.resize(img, (new_width, new_height), interpolation=interpolation)
 
-    # Create a new canvas with edge padding
+    # Calculate padding to center the image
+    top = (target_size - new_height) // 2
+    bottom = (target_size - new_height + 1) // 2
+    left = (target_size - new_width) // 2
+    right = (target_size - new_width + 1) // 2
+
+    # Create a new canvas with reflect padding
     canvas = cv2.copyMakeBorder(
         img_resized,
-        top=(target_size - new_height) // 2,
-        bottom=(target_size - new_height + 1) // 2,
-        left=(target_size - new_width) // 2,
-        right=(target_size - new_width + 1) // 2,
-        borderType=cv2.BORDER_REPLICATE
+        top=top,
+        bottom=bottom,
+        left=left,
+        right=right,
+        borderType=cv2.BORDER_REFLECT_101
     )
 
     base_name = os.path.splitext(os.path.basename(img_path))[0]
