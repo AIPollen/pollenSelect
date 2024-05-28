@@ -1,65 +1,91 @@
 import cv2
 import os
 import logging
+import numpy as np  # Required for creating the canvas
 
 # Variables, change the variables if needed
-TARGET_SIZE = 224 # Optimal voor Teachable Machine
-INTERPOLATION = cv2.INTER_AREA # Optimal for reducing image size
+TARGET_SIZE = 224  # Desired square size
+INTERPOLATION = cv2.INTER_AREA  # Optimal for reducing image size
 SUPPORTED_FORMATS = (".jpg", ".jpeg", ".png")
+BACKGROUND_COLOR = (255, 255, 255)  # White background color
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def resize_and_save_image(img_path, target_size=TARGET_SIZE, dest_path="", interpolation=INTERPOLATION):
+
+def resize_and_pad_image(img_path, target_size=TARGET_SIZE, dest_subdirectory="_Resized_Square_", interpolation=INTERPOLATION):
     """
-    Resizes an image to a specified target size while maintaining the aspect ratio.
-    
+    Resizes an image to fit within a square and adds padding to maintain aspect ratio.
+
     Parameters:
         img_path (str): Path to the input image.
-        target_size (int): Target size for the longest dimension of the image.
-        dest_path (str): Directory to save the resized image. If not specified, saves in a subdirectory.
+        target_size (int): Target size for the square image.
+        dest_subdirectory (str): Subdirectory within the image directory to save the resized image. Defaults to "_Resized_Square_".
         interpolation (int): Interpolation method for resizing.
     """
     if not os.path.isfile(img_path):
         logging.error(f"Error: Image file not found: {img_path}")
         return
 
-    img = cv2.imread(img_path)
-    if img is None:
-        logging.error(f"Error: Could not load image from {img_path}. It might be corrupted or in an unsupported format.")
+    # Load the image
+    try:
+        img = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+        if img is None:
+            logging.error(f"Error: Could not load image from {img_path}. It might be corrupted or in an unsupported format.")
+            return
+    except Exception as e:
+        logging.error(f"Error loading image: {img_path} - {e}")
         return
 
-    height, width, _ = img.shape
-    longest_side = max(height, width)
-    aspect_ratio = target_size / longest_side
+    height, width = img.shape[:2]
 
-    new_height = int(height * aspect_ratio)
-    new_width = int(width * aspect_ratio)
+    # Calculate new dimensions to maintain aspect ratio
+    if height > width:
+        new_height = target_size
+        new_width = int(target_size * (width / height))
+    else:
+        new_width = target_size
+        new_height = int(target_size * (height / width))
+
+    if new_width <= 0 or new_height <= 0:
+        logging.error(f"Error: Calculated dimensions are invalid for resizing: {new_width}x{new_height}")
+        return
 
     img_resized = cv2.resize(img, (new_width, new_height), interpolation=interpolation)
+
+    # Create a new canvas with white background
+    canvas = np.zeros((target_size, target_size, 3), dtype=np.uint8)
+    canvas[:, :] = BACKGROUND_COLOR
+
+    # Add the resized image to the center of the canvas
+    y_offset = (target_size - new_height) // 2
+    x_offset = (target_size - new_width) // 2
+    canvas[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = img_resized
 
     base_name = os.path.splitext(os.path.basename(img_path))[0]
     ext = os.path.splitext(os.path.basename(img_path))[1]
     out_filename = f"{base_name}_{target_size}px{ext}"
 
-    if not dest_path:
-        dest_path = os.path.join(os.path.dirname(img_path), "_Resized_", str(target_size))
-        os.makedirs(dest_path, exist_ok=True)
+    # Construct the output path within the image directory
+    dest_path = os.path.join(os.path.dirname(img_path), dest_subdirectory, str(target_size))
+
+    # Create the directory if it doesn't exist (using os.makedirs with exist_ok=True)
+    os.makedirs(dest_path, exist_ok=True)
 
     out_path = os.path.join(dest_path, out_filename)
-    cv2.imwrite(out_path, img_resized)
-    logging.info(f"Image resized: {img_path} -> {out_path}")
+    cv2.imwrite(out_path, canvas)
+    logging.info(f"Image resized and padded: {img_path} -> {out_path}")
+
 
 if __name__ == "__main__":
-    image_path = input("Please enter the path to the image directory: ")
+    image_directory = input("Please enter the path to the image directory: ")
 
-    if not os.path.isdir(image_path):
-        logging.error(f"Error: The path provided is not a valid directory: {image_path}")
+    if not os.path.isdir(image_directory):
+        logging.error(f"Error: The path provided is not a valid directory: {image_directory}")
     else:
-        for filename in os.listdir(image_path):
-            if filename.startswith("."):
-                continue  # Skip hidden files
-
-            img_path = os.path.join(image_path, filename)
-            if os.path.isfile(img_path) and filename.lower().endswith(SUPPORTED_FORMATS):
-                resize_and_save_image(img_path, TARGET_SIZE)
+        for filename in os.listdir(image_directory):
+            if filename.lower().endswith(SUPPORTED_FORMATS):
+                img_path = os.path.join(image_directory, filename)
+                resize_and_pad_image(img_path)
+            else:
+                logging.warning(f"Unsupported file format skipped: {filename}")
