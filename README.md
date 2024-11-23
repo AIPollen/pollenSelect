@@ -1,3 +1,7 @@
+Archived 2024-11-23
+
+Functions are replaced by grounding DINO.
+
 # Select Pollen
 
 Selects multiple pollen grains from one image for machine learning datasets.
